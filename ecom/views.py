@@ -28,7 +28,7 @@ def index(request):
         n = len(prod)
         nSlides = n // 4 + ceil((n / 4) - (n // 4))
         allProds.append([prod, range(1, nSlides), nSlides])
-        params = {'allProds': allProds}
+    params = {'allProds': allProds}
     return render(request, 'ecom/index.html', params)
 
 
