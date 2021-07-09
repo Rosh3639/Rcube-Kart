@@ -1,0 +1,6 @@
+db.sqlite3
+PayTm
+ecom/templates/ecom/paymentstatus.html
+ecom/templates/ecom/paytm.html
+.idea
+

@@ -1,0 +1,126 @@
+{% extends 'ecom/base.html' %}
+
+{% block title %}Checkout - Rcube Kart{% endblock %}
+{% block body %}
+
+<div class="container my-5">
+    <div class="col my-4">
+        <h2>Step 1 - Rcube Kart Checkout - Review Cart Items</h2>
+        <div class="my-4">
+            <ol id="items" class="list-group list-group-numbered"></ol>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mt-3">
+                    <li class="breadcrumb-item active" aria-current="page">Your Cart Total Is <b>Rs. <span id="totalPrice"></span></b> Enter your details below & place your order. Thanks for using Rcube Kart!
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+
+    <div class="col my-5">
+        <h2>Step 2 - Enter Address And Other Details</h2>
+
+        <form method="post" action="/ecom/checkout/" class="row g-3">
+            {% csrf_token %}
+            <input type="hidden" name="itemsJson" id="itemsJson">
+            <input type="hidden" name="amount" id="amount">
+            <div class="col-md-6">
+                <label for="inputname" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Your Name">
+            </div>
+            <div class="col-md-6">
+                <label for="inputEmail4" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Your Email">
+            </div>
+            <div class="col-12">
+                <label for="inputAddress" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address1" name="address1" placeholder="Eg: 1234 Main St">
+            </div>
+            <div class="col-12">
+                <label for="inputAddress2" class="form-label">Address Line 2</label>
+                <input type="text" class="form-control" id="address2" name="address2"
+                       placeholder="Apartment, studio, or floor">
+            </div>
+            <div class="col-md-6">
+                <label for="inputCity" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city" placeholder="Enter Your State">
+            </div>
+            <div class="col-md-4">
+                <label for="inputState" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state" placeholder="Enter Your State">
+
+            </div>
+            <div class="col-md-2">
+                <label for="inputZip" class="form-label">Zip</label>
+                <input type="text" class="form-control" id="zip_code" name="zip_code">
+            </div>
+
+            <div class="col-12">
+                <label for="inputPhone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" name="phone">
+            </div>
+
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary my-3">Place Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+
+<script>
+    // Find out the cart items from localStorage
+if (localStorage.getItem('cart') == null) {
+    var cart = {};
+} else {
+    cart = JSON.parse(localStorage.getItem('cart'));
+}
+console.log(cart);
+var sum = 0;
+var totalPrice = 0;
+if ($.isEmptyObject(cart)){
+    //If object is empty
+    mystr = `<marquee><a href='/ecom'><br><strong>Your Cart Is Empty, Please Add Some Items Before Checking Out!</strong></a>`
+        $('#items').append(mystr);
+}
+else{
+    for(item in cart) {
+        let name = cart[item][1];
+        let qty = cart[item][0];
+        let itemPrice = cart[item][2];
+        sum = sum + qty;
+        totalPrice = totalPrice + qty * itemPrice
+        mystr = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                    ${name}
+                    <span class="badge bg-primary rounded-pill">${qty}</span>
+                </li>`
+        $('#items').append(mystr);
+}
+
+        total = `<div class="alert alert-success" role="alert"><li class="list-group-item d-flex justify-content-between align-items-center">
+                    <h3>Total Bill</h3>
+                    <h3>  Rs.${totalPrice}  </h3>
+                </li></div>`
+        $('#items').append(total);
+}
+
+
+document.getElementById('cart').innerHTML = sum;
+document.getElementById('totalPrice').innerHTML = totalPrice;
+$('#itemsJson').val(JSON.stringify(cart));
+{% if thank %}
+alert("Thank You For Ordering. Your Order Id is {{id}}.Use It To Track Your Order");
+localStorage.clear();
+document.location = "/ecom";
+{% endif %}
+
+
+$('#amount').val($('#totalPrice').html())
+
+</script>
+
+{% endblock %}
